@@ -4,6 +4,10 @@ provider "docker" {
     
 }
 
+provider "aws" {
+    region = "us-west-1"
+}
+
 resource "docker_image" "nginx_image" {
   name = "nginx:latest"
   keep_locally = false
