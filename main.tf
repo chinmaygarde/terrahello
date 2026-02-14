@@ -1,23 +1,18 @@
 # This is where the resources are defined.
 
-provider "docker" {
-    
-}
-
 provider "aws" {
     region = "us-west-1"
 }
 
-resource "docker_image" "nginx_image" {
-  name = "nginx:latest"
-  keep_locally = false
-}
+module "s3_bucket" {
+  source = "terraform-aws-modules/s3-bucket/aws"
 
-resource "docker_container" "nginx_container" {
-  image = docker_image.nginx_image.name
-  name = "nginx_container"
-  ports {
-    internal = 80
-    external = 8080
+  acl    = "private"
+
+  control_object_ownership = true
+  object_ownership         = "ObjectWriter"
+
+  versioning = {
+    enabled = true
   }
 }
