@@ -1,18 +1,32 @@
 # This is where the resources are defined.
 
-provider "aws" {
-    region = "us-west-1"
+provider "azurerm" {
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = false
+    }
+  }
 }
 
-module "s3_bucket" {
-  source = "terraform-aws-modules/s3-bucket/aws"
+resource "azurerm_resource_group" "rg_terrahello" {
+  name     = "terrahello"
+  location = "West US 2"
+}
 
-  acl    = "private"
+resource "azurerm_storage_account" "sa_web" {
+  location                 = azurerm_resource_group.rg_terrahello.location
+  resource_group_name      = azurerm_resource_group.rg_terrahello.name
+  account_replication_type = "LRS"
+  account_tier             = "Standard"
+  name                     = "terrahellosaweb"
+}
 
-  control_object_ownership = true
-  object_ownership         = "ObjectWriter"
+resource "azurerm_storage_account_static_website" "sa_web" {
+  storage_account_id = azurerm_storage_account.sa_web.id
+  index_document     = "index.html"
+  error_404_document = "404.html"
+}
 
-  versioning = {
-    enabled = true
-  }
+output "sa_web_url" {
+  value = azurerm_storage_account.sa_web.primary_web_endpoint
 }
