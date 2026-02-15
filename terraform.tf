@@ -7,4 +7,11 @@ terraform {
       version = "= 4.60.0"
     }
   }
+  backend "azurerm" {
+    resource_group_name  = "terrahello-tfstate"
+    storage_account_name = "terrahellotfstate"
+    container_name       = "tfstate"
+    key                  = "terraform.tfstate"
+    use_cli              = true
+  }
 }
