@@ -14,7 +14,7 @@ resource "azurerm_storage_account" "web" {
   account_tier             = "Standard"
   name                     = "terrahellosaweb"
   custom_domain {
-    name          = "demo.${var.domain_name}"
+    name          = "demo.${data.azurerm_key_vault_secret.domain_name.value}"
   }
 }
 
@@ -26,7 +26,7 @@ resource "azurerm_storage_account_static_website" "web" {
 }
 
 resource "cloudflare_dns_record" "demo" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.azurerm_key_vault_secret.cloudflare_zone_id.value
   name    = "demo"
   proxied = true
   ttl     = 1
@@ -36,7 +36,7 @@ resource "cloudflare_dns_record" "demo" {
 }
 
 resource "cloudflare_dns_record" "asverify" {
-  zone_id = var.cloudflare_zone_id
+  zone_id = data.azurerm_key_vault_secret.cloudflare_zone_id.value
   name    = "asverify.${cloudflare_dns_record.demo.name}"
   ttl     = 3600
   type    = "CNAME"
