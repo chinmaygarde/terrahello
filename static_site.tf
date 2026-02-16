@@ -25,7 +25,7 @@ resource "azurerm_storage_account_static_website" "web" {
   error_404_document = "404_custom.html"
 }
 
-resource "cloudflare_dns_record" "demo" {
+resource "cloudflare_dns_record" "cname_demo" {
   zone_id = data.azurerm_key_vault_secret.cloudflare_zone_id.value
   name    = "demo"
   proxied = true
@@ -35,9 +35,9 @@ resource "cloudflare_dns_record" "demo" {
   comment = "Primary Endpoint for Static Website Hosted on Azure"
 }
 
-resource "cloudflare_dns_record" "asverify" {
+resource "cloudflare_dns_record" "cname_asverify_demo" {
   zone_id = data.azurerm_key_vault_secret.cloudflare_zone_id.value
-  name    = "asverify.${cloudflare_dns_record.demo.name}"
+  name    = "asverify.${cloudflare_dns_record.cname_demo.name}"
   ttl     = 3600
   type    = "CNAME"
   content = "asverify.${azurerm_storage_account.web.primary_web_host}"
