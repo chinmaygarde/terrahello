@@ -14,7 +14,7 @@ resource "azurerm_storage_account" "web" {
   account_tier             = "Standard"
   name                     = "terrahellosaweb"
   custom_domain {
-    name = "demo.${var.domain_name}"
+    name          = "demo.${var.domain_name}"
     use_subdomain = true
   }
 }
