@@ -15,7 +15,6 @@ resource "azurerm_storage_account" "web" {
   name                     = "terrahellosaweb"
   custom_domain {
     name          = "demo.${var.domain_name}"
-    use_subdomain = true
   }
 }
 
