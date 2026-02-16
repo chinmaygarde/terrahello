@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "= 4.60.0"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "terrahello-tfstate"
@@ -14,4 +18,16 @@ terraform {
     key                  = "terraform.tfstate"
     use_cli              = true
   }
+}
+
+provider "azurerm" {
+  features {
+    resource_group {
+      prevent_deletion_if_contains_resources = true
+    }
+  }
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }

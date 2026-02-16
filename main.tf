@@ -1,32 +1,47 @@
 # This is where the resources are defined.
 
-provider "azurerm" {
-  features {
-    resource_group {
-      prevent_deletion_if_contains_resources = false
-    }
-  }
-}
-
-resource "azurerm_resource_group" "rg_terrahello" {
+# Create a resource group in Azure.
+resource "azurerm_resource_group" "terrahello" {
   name     = "terrahello"
   location = "West US 2"
 }
 
-resource "azurerm_storage_account" "sa_web" {
-  location                 = azurerm_resource_group.rg_terrahello.location
-  resource_group_name      = azurerm_resource_group.rg_terrahello.name
+# Create a storage account for the website.
+resource "azurerm_storage_account" "web" {
+  location                 = azurerm_resource_group.terrahello.location
+  resource_group_name      = azurerm_resource_group.terrahello.name
   account_replication_type = "LRS"
   account_tier             = "Standard"
   name                     = "terrahellosaweb"
+  custom_domain {
+    name = "demo.${var.domain_name}"
+    use_subdomain = true
+  }
 }
 
-resource "azurerm_storage_account_static_website" "sa_web" {
-  storage_account_id = azurerm_storage_account.sa_web.id
+# Host the website from the storage account.
+resource "azurerm_storage_account_static_website" "web" {
+  storage_account_id = azurerm_storage_account.web.id
   index_document     = "index.html"
-  error_404_document = "404.html"
+  error_404_document = "404_custom.html"
 }
 
-output "sa_web_url" {
-  value = azurerm_storage_account.sa_web.primary_web_endpoint
+resource "cloudflare_dns_record" "demo" {
+  zone_id = var.cloudflare_zone_id
+  name    = "demo"
+  proxied = true
+  ttl     = 1
+  type    = "CNAME"
+  content = azurerm_storage_account.web.primary_web_host
+  comment = "Primary Endpoint for Static Website Hosted on Azure"
+}
+
+resource "cloudflare_dns_record" "asverify" {
+  zone_id = var.cloudflare_zone_id
+  name    = "asverify.${cloudflare_dns_record.demo.name}"
+  ttl     = 3600
+  type    = "CNAME"
+  content = "asverify.${azurerm_storage_account.web.primary_web_host}"
+  comment = "Intermdiate CNAME record for Static Website Hosted on Azure"
+  proxied = false
 }
