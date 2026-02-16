@@ -3,6 +3,7 @@ resource "azurerm_virtual_network" "terrahello" {
   address_space = ["10.0.0.0/16"]
   location = azurerm_resource_group.terrahello.location
   resource_group_name = azurerm_resource_group.terrahello.name
+  dns_servers = [ "1.1.1.1" ]
 }
 
 resource "azurerm_subnet" "vm" {
@@ -23,6 +24,11 @@ resource "azurerm_network_interface" "vm" {
   }
 }
 
+data "azurerm_key_vault_secret" "admin_pubkey" {
+  name         = "admin-pubkey"
+  key_vault_id = azurerm_key_vault.vault.id
+}
+
 resource "azurerm_linux_virtual_machine" "linux1" {
   name                = "linux1"
   resource_group_name = azurerm_resource_group.terrahello.name
@@ -37,7 +43,7 @@ resource "azurerm_linux_virtual_machine" "linux1" {
   disable_password_authentication = true
   admin_ssh_key {
     username   = var.admin_user
-    public_key = var.admin_pubkey
+    public_key = data.azurerm_key_vault_secret.admin_pubkey.value
   }
 
   os_disk {

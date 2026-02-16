@@ -4,9 +4,3 @@ variable "admin_user" {
   default = "buzzy"
   sensitive = false
 }
-
-variable "admin_pubkey" {
-  description = "The SSH public key of the admin user name."
-  type = string
-  sensitive = false
-}
