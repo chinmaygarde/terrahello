@@ -13,6 +13,14 @@ resource "azurerm_subnet" "vm" {
   address_prefixes = ["10.0.1.0/24"]
 }
 
+resource "azurerm_public_ip" "linux1_public_ip" {
+  name                = "linux1_public_ip"
+  resource_group_name = azurerm_resource_group.terrahello.name
+  location            = azurerm_resource_group.terrahello.location
+  allocation_method   = "Static"
+  sku                 = "Standard"
+}
+
 resource "azurerm_network_interface" "vm" {
   name = "vm"
   location = azurerm_resource_group.terrahello.location
@@ -21,6 +29,7 @@ resource "azurerm_network_interface" "vm" {
     private_ip_address_allocation = "Dynamic"
     name = "vm"
     subnet_id = azurerm_subnet.vm.id
+    public_ip_address_id = azurerm_public_ip.linux1_public_ip.id
   }
 }
 
