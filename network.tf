@@ -1,16 +1,16 @@
 resource "azurerm_virtual_network" "terrahello" {
-  name = "terrahello"
-  address_space = ["10.0.0.0/16"]
-  location = azurerm_resource_group.terrahello.location
+  name                = "terrahello"
+  address_space       = ["10.0.0.0/16"]
+  location            = azurerm_resource_group.terrahello.location
   resource_group_name = azurerm_resource_group.terrahello.name
-  dns_servers = [ "1.1.1.1" ]
+  dns_servers         = ["1.1.1.1"]
 }
 
 resource "azurerm_subnet" "vm" {
-  name = "vm"
-  resource_group_name = azurerm_resource_group.terrahello.name
+  name                 = "vm"
+  resource_group_name  = azurerm_resource_group.terrahello.name
   virtual_network_name = azurerm_virtual_network.terrahello.name
-  address_prefixes = ["10.0.1.0/24"]
+  address_prefixes     = ["10.0.1.0/24"]
 }
 
 resource "azurerm_public_ip" "linux1_public_ip" {
@@ -40,19 +40,19 @@ resource "azurerm_network_security_group" "allow_ssh" {
 }
 
 resource "azurerm_network_interface_security_group_association" "allow_ssh" {
-  network_interface_id = azurerm_network_interface.vm.id
+  network_interface_id      = azurerm_network_interface.vm.id
   network_security_group_id = azurerm_network_security_group.allow_ssh.id
 }
 
 resource "azurerm_network_interface" "vm" {
-  name = "vm"
-  location = azurerm_resource_group.terrahello.location
+  name                = "vm"
+  location            = azurerm_resource_group.terrahello.location
   resource_group_name = azurerm_resource_group.terrahello.name
   ip_configuration {
     private_ip_address_allocation = "Dynamic"
-    name = "vm"
-    subnet_id = azurerm_subnet.vm.id
-    public_ip_address_id = azurerm_public_ip.linux1_public_ip.id
+    name                          = "vm"
+    subnet_id                     = azurerm_subnet.vm.id
+    public_ip_address_id          = azurerm_public_ip.linux1_public_ip.id
   }
 }
 
@@ -71,7 +71,7 @@ resource "azurerm_linux_virtual_machine" "linux1" {
     azurerm_network_interface.vm.id
   ]
 
-  admin_username      = var.admin_user
+  admin_username                  = var.admin_user
   disable_password_authentication = true
   admin_ssh_key {
     username   = var.admin_user

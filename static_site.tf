@@ -14,7 +14,7 @@ resource "azurerm_storage_account" "web" {
   account_tier             = "Standard"
   name                     = "terrahellosaweb"
   custom_domain {
-    name          = "demo.${data.azurerm_key_vault_secret.domain_name.value}"
+    name = "demo.${data.azurerm_key_vault_secret.domain_name.value}"
   }
 }
 
